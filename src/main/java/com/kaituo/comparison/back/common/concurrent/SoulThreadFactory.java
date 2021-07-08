@@ -22,9 +22,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * SoulThreadFactory.
+ * 线程工厂
  *
- * @author xiaoyu
  */
 public final class SoulThreadFactory implements ThreadFactory {
 

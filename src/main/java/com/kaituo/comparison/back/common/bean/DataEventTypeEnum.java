@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.kaituo.comparison.back.core.websocket;
+package com.kaituo.comparison.back.common.bean;
 
 /**
  * The enum Data event type.
@@ -45,19 +45,8 @@ public enum DataEventTypeEnum {
     REFRESH,
 
     /**
-     * Myself data event type enum.
+     * init event
      */
-    MYSELF;
+    INIT
 
-    /**
-     * Acquire by name data event type enum.
-     *
-     * @param name the name
-     * @return the data event type enum
-     */
-//    public static DataEventTypeEnum acquireByName(final String name) {
-//        return Arrays.stream(DataEventTypeEnum.values())
-//                .filter(e -> Objects.equals(e.name(), name))
-//                .findFirst().orElseThrow(() -> new SoulException(String.format(" this DataEventTypeEnum can not support %s", name)));
-//    }
 }

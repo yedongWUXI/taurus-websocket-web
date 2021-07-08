@@ -1,7 +1,8 @@
 package com.kaituo.comparison.back;
 
 
-import com.kaituo.comparison.back.core.websocket.DataEventTypeEnum;
+import com.kaituo.comparison.back.common.bean.DataEventTypeEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -9,7 +10,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
+ * 测试  开始webSocket
  */
+@Slf4j
 public class WebsocketClientTest {
 
     public static WebSocketClient client;
@@ -19,13 +22,18 @@ public class WebsocketClientTest {
             client = new WebSocketClient(new URI("ws://localhost:1001/websocket")) {
                 @Override
                 public void onOpen(ServerHandshake serverHandshake) {
-                    client.send(DataEventTypeEnum.MYSELF.name());
+                    client.send(DataEventTypeEnum.INIT.name());
                     System.out.println("打开链接");
                 }
 
                 @Override
                 public void onMessage(String s) {
-                    System.out.println("收到消息" + s);
+
+                    try {
+                        handleResult(s);
+                    } catch (Exception e) {
+                        log.error("websocket handle data exception :", e);
+                    }
                 }
 
                 @Override
@@ -48,8 +56,10 @@ public class WebsocketClientTest {
     }
 
 
-    public static void send(byte[] bytes) {
-        client.send(bytes);
-    }
+    static void handleResult(final String result) {
 
+
+        log.info("消费websocket, 数据:{}", result);
+        log.info("{}", "写入网关内存");
+    }
 }

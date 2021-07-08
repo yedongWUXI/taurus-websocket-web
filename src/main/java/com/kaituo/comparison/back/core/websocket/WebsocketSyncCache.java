@@ -20,6 +20,7 @@
 package com.kaituo.comparison.back.core.websocket;
 
 import com.google.common.collect.Maps;
+import com.kaituo.comparison.back.common.bean.DataEventTypeEnum;
 import com.kaituo.comparison.back.common.concurrent.SoulThreadFactory;
 import com.kaituo.comparison.back.core.config.SoulConfig;
 import org.java_websocket.client.WebSocketClient;
@@ -29,16 +30,16 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * The type Websocket sync cache.
- *
+ * 建立webSocket长连接
+ * 1.发送初始化信号
+ * 2.接收业务数据
  */
-public class WebsocketSyncCache  {
+public class WebsocketSyncCache {
 
     static final ConcurrentMap<String, String> MAP = Maps.newConcurrentMap();
 
@@ -52,13 +53,13 @@ public class WebsocketSyncCache  {
     private volatile boolean alreadySync = Boolean.FALSE;
 
     /**
+     * 连接webSocket客户端
      * Instantiates a new Websocket sync cache.
      *
      * @param websocketConfig the websocket config
      */
     public WebsocketSyncCache(final SoulConfig.WebsocketConfig websocketConfig) {
-        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1,
-                SoulThreadFactory.create("websocket-connect", true));
+
 
         //开启webSocket连接
         try {
@@ -66,7 +67,8 @@ public class WebsocketSyncCache  {
                 @Override
                 public void onOpen(final ServerHandshake serverHandshake) {
                     if (!alreadySync) {
-                        client.send(DataEventTypeEnum.MYSELF.name());
+                        //启动的时候通知 admin 初始化数据。 设置已经同步初始化为true
+                        client.send(DataEventTypeEnum.INIT.name());
                         alreadySync = true;
                     }
                 }
@@ -106,6 +108,10 @@ public class WebsocketSyncCache  {
             LOGGER.info("websocket connection...exception....", e);
         }
 
+        //建立一个daemon线程 执行器
+        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1, SoulThreadFactory.create("websocket-connect", true));
+
+        //启动执行器进行健康监测和重连
         //初始10秒后执行,之后每30秒监测client的健康状态
         executor.scheduleAtFixedRate(() -> {
             try {

@@ -18,6 +18,7 @@
 package com.kaituo.comparison.back.core.config;
 
 import com.kaituo.comparison.back.core.websocket.WebsocketSyncCache;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -26,30 +27,23 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  *
- * @author huangxiaofeng
- * @author xiaoyu
  */
+@Slf4j
 @EnableConfigurationProperties(SoulConfig.class)
+@Configuration
+@ConditionalOnProperty(name = "soul.sync.strategy", havingValue = "websocket", matchIfMissing = true)
 public class LocalCacheConfiguration {
 
-
     /**
-     * The type Websocket cache manager.
+     * 初始化bean的时候  连接webSocket长连接  并初始化jvm内存
+     *
+     * @param soulConfig the soul config
+     * @return the local cache manager
      */
-    @Configuration
-    @ConditionalOnProperty(name = "soul.sync.strategy", havingValue = "websocket", matchIfMissing = true)
-    static class WebsocketCacheManager {
-
-        /**
-         * 项目启动时连接webSocket  并初始化jvm内存
-         *
-         * @param soulConfig the soul config
-         * @return the local cache manager
-         */
-        @Bean
-        public WebsocketSyncCache localCacheManager(final SoulConfig soulConfig) {
-            return new WebsocketSyncCache(soulConfig.getSync().getWebsocket());
-        }
+    @Bean
+    public WebsocketSyncCache localCacheManager(final SoulConfig soulConfig) {
+        log.info("建立webSocket长连接");
+        return new WebsocketSyncCache(soulConfig.getSync().getWebsocket());
     }
 
 }

@@ -25,8 +25,9 @@ import org.springframework.stereotype.Component;
 import java.io.Serializable;
 
 /**
- * The type Soul config.
- *
+ * 配置文件
+ * <p>
+ * (可以这样写来接收  树形配置文件信息)
  */
 @Data
 @Component
@@ -41,9 +42,6 @@ public class SoulConfig implements Serializable {
 
     private Sync sync;
 
-    private Disruptor disruptor;
-
-
     /**
      * The type Sync.
      */
@@ -56,20 +54,9 @@ public class SoulConfig implements Serializable {
 
     }
 
-
     @Data
     public static class WebsocketConfig {
 
         private String url;
     }
-
-    @Data
-    public static class Disruptor {
-
-        private Integer bufferSize;
-
-        private Integer threadSize;
-
-    }
-
 }
